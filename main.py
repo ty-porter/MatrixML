@@ -1,10 +1,11 @@
-from MatrixML.screen import MatrixScreen, MatrixScreenManager
+from MatrixML.screen import MatrixScreenManager
+from samples.sample_screen import SampleScreen
 
 
 # Main function
 if __name__ == "__main__":
     template = "samples/test.matrix.html"
-    screen   = MatrixScreen(template)
+    screen   = SampleScreen(template)
     manager  = MatrixScreenManager()
     manager.register_screen(screen)
 

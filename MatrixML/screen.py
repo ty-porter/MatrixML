@@ -24,8 +24,14 @@ class MatrixScreenManager(MatrixDisplayAdapter):
         self.font.LoadFont("./fonts/6x10.bdf")
 
         while True:
-            self.canvas.Clear()
-            self.render()
+            i = 0
+            
+            self.screens[0].refresh()
+
+            while i < 150:
+                self.canvas.Clear()
+                self.render()
+                i += 1
 
 
 class MatrixScreen:
@@ -34,5 +40,12 @@ class MatrixScreen:
         self.parser        = MatrixTemplateParser()
 
         self.parser.load_template(template_path)
+        self.parser.register_screen(self)
 
         self.elements = self.parser.parse()
+
+    def resolve(self, binding):
+        return getattr(self, binding)
+
+    def refresh(self):
+        raise NotImplementedError("Subclasses must implement screen refresh logic.")

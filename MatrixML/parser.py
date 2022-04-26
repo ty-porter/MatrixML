@@ -6,6 +6,7 @@ from MatrixML.errors import InvalidTagType, ParseError
 class MatrixTemplateParser(HTMLParser):
 
     ELEMENT_TYPES = {
+        'py': DynamicElement,
         'row': RowElement,
         'scroll': ScrollElement,
         'text': TextElement
@@ -14,6 +15,9 @@ class MatrixTemplateParser(HTMLParser):
     def load_template(self, template_path):
         with open(template_path, 'r') as f:
             self.__html_raw = f.read()
+
+    def register_screen(self, screen):
+        self.screen = screen
 
     def parse(self):
         self.tokens = []
@@ -71,7 +75,8 @@ class MatrixTemplateParser(HTMLParser):
             if len(stack) == 0:
                 subset = tokens[start + 1:i]
                 element_type = self.fetch_element_type(token.get('tag'))
-                element = element_type(self.parse_tokens(subset))
+                element = element_type(self.screen, self.parse_tokens(subset), tokens[start].get("attrs"))
+                element.hydrate()
                 output.append(element)
                 start = i + 1
 

@@ -2,11 +2,13 @@ from math import floor
 
 
 class MatrixElement:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, screen, data, attributes):
+        self.screen     = screen
+        self.data       = data
+        self.attributes = attributes
 
     def render(self, *_args):
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement rendering logic.")
 
     def raw(self):
         output = ""
@@ -16,6 +18,27 @@ class MatrixElement:
 
         return output
 
+    def hydrate(self):
+        '''Dynamic elements must be hydrated before rendering, subclasses should implement as needed.'''
+        return
+
+
+class DynamicElement(MatrixElement):
+    def render(self, adapter, x_position, y_position):
+        return adapter.graphics.DrawText(adapter.canvas, 
+                                         adapter.font, 
+                                         x_position,
+                                         y_position, 
+                                         adapter.graphics.Color(255, 255, 0), 
+                                         self.data)
+
+    def raw(self):
+        return self.data
+
+    def hydrate(self):
+        binding = self.attributes[0][0]
+        self.data = self.screen.resolve(binding)
+
 
 class RowElement(MatrixElement):
     def render(self, adapter, x_position, y_position):
@@ -24,8 +47,8 @@ class RowElement(MatrixElement):
 
 
 class ScrollElement(MatrixElement):
-    def __init__(self, data):
-        super(ScrollElement, self).__init__(data)
+    def __init__(self, screen, data, attributes):
+        super(ScrollElement, self).__init__(screen, data, attributes)
 
         # Helpers to delay start/stop of scrolling
         self.previous_tick  = 0
