@@ -11,6 +11,7 @@ MatrixML comes with a rendering engine that parses the tags and writes the pixel
 ### Screenshots
 
 ![MatrixML](assets/MatrixML.gif)
+![Dynamic Python bindings](assets/dynamic.gif)
 
 ### Installation
 
@@ -40,6 +41,8 @@ Future releases will support actual hardware.
 * `<scroll>`
   - A scrolling row element that only scrolls if needed
   - :warning: Currently only supports nested `<text>` tags
+* `<py />` (self-closing)
+  - A dynamic element that can re-render on screen refresh
 
 ### Example Markup
 
