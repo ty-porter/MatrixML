@@ -1,4 +1,8 @@
+from io import BytesIO
 from math import floor
+from PIL import Image
+
+import requests
 
 
 class MatrixElement:
@@ -18,26 +22,40 @@ class MatrixElement:
 
         return output
 
-    def hydrate(self):
-        '''Dynamic elements must be hydrated before rendering, subclasses should implement as needed.'''
-        return
 
-
-class DynamicElement(MatrixElement):
+class ImageElement(MatrixElement):
     def render(self, adapter, x_position, y_position):
-        return adapter.graphics.DrawText(adapter.canvas, 
-                                         adapter.font, 
-                                         x_position,
-                                         y_position, 
-                                         adapter.graphics.Color(255, 255, 0), 
-                                         self.data)
+        href_attribute = None
 
-    def raw(self):
-        return self.data
+        if len(self.data) == 0:
+            for attribute in self.attributes:
+                if attribute[0] == "href":
+                    identifier = attribute[1]
+                    href_attribute = attribute
+        else:
+            identifier = self.data
 
-    def hydrate(self):
-        binding = self.attributes[0][0]
-        self.data = self.screen.resolve(binding)
+        image = self.screen.image_cache.get(identifier)
+
+        if image is None and href_attribute is not None:
+            image = self.__fetch_remote_image(identifier)
+        elif image is None:
+            return
+
+        return adapter.canvas.SetImage(image, 
+                                       x_position, 
+                                       y_position)
+
+    def __fetch_remote_image(self, remote_url):
+        response = requests.get(remote_url)
+        bytes = BytesIO(response.content)
+        image = Image.open(bytes).convert("RGB")
+        image.seek(0)
+
+        self.screen.cache_image(image, identifier=remote_url)
+
+        # breakpoint()
+        return image
 
 
 class RowElement(MatrixElement):

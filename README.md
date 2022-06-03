@@ -41,28 +41,8 @@ Future releases will support actual hardware.
 * `<scroll>`
   - A scrolling row element that only scrolls if needed
   - :warning: Currently only supports nested `<text>` tags
-* `<py />` (self-closing)
-  - A dynamic element that can re-render on screen refresh
 
-### Example Markup
-
-This sample can be found in `samples/test.matrix.html`.
-
-```
-<text>
-  TEXT
-</text>
-<row>
-  <text>
-    ROW
-  </text>
-</row>
-<scroll>
-  <text>
-    SCROLL SCROLL
-  </text>
-</scroll>
-```
+Example markup can be found in the `samples` directory.
 
 ### Registering Screens
 

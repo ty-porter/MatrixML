@@ -1,0 +1,5 @@
+{% if screen.current_image == 1 %}
+  <img>{{ screen.image_identifier }}</img>
+{% else %}
+  <img href="{{ screen.REMOTE_IMAGE_URL }}" />
+{% endif %}

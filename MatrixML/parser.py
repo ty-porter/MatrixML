@@ -2,26 +2,29 @@ from html.parser import HTMLParser
 from MatrixML.elements import *
 from MatrixML.errors import InvalidTagType, ParseError
 
+from jinja2 import Template
 
 class MatrixTemplateParser(HTMLParser):
 
     ELEMENT_TYPES = {
-        'py': DynamicElement,
+        'img': ImageElement,
         'row': RowElement,
         'scroll': ScrollElement,
         'text': TextElement
     }
 
-    def load_template(self, template_path):
+    def __init__(self, template_path, screen):
+        super(MatrixTemplateParser, self).__init__()
+
         with open(template_path, 'r') as f:
             self.__html_raw = f.read()
 
-    def register_screen(self, screen):
-        self.screen = screen
+        self.template = Template(self.__html_raw, autoescape=True)
+        self.screen   = screen
 
     def parse(self):
         self.tokens = []
-        self.feed(self.__html_raw)
+        self.feed(self.template.render(screen=self.screen))
 
         return self.parse_tokens(self.tokens)
 
@@ -76,7 +79,6 @@ class MatrixTemplateParser(HTMLParser):
                 subset = tokens[start + 1:i]
                 element_type = self.fetch_element_type(token.get('tag'))
                 element = element_type(self.screen, self.parse_tokens(subset), tokens[start].get("attrs"))
-                element.hydrate()
                 output.append(element)
                 start = i + 1
 
